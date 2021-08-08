@@ -1,23 +1,19 @@
-<%-include("partials/head")%>
+<!DOCTYPE html>
+<html lang="es">
+<%-include("../partials/head.ejs", {title: 'Listado de productos'})%>
 
-<title>Perfil de Usuario | 4Music</title>
 
 <body class="fourMusic">
 
-<%-include("partials/header.ejs")%>
-
+    <%-include("../partials/header.ejs")%>
+ 
 
 <div class="contenedorPerfilUsuario">
     <h2 class="bienvenida">Bienvenido Usuario XXXX!</h2>
 
-    <a href="/products/nuevoProducto">
+    <a href="/products/create">
         <button type="button" class="boton-registro">
             Publicar nuevo producto
-        </button>
-    </a>
-    <a href="/products/edicionProducto">
-        <button type="button" class="boton-registro">
-            Editar producto
         </button>
     </a>
     <a href="#">
@@ -46,6 +42,6 @@
         </button>
     </a>
 </div>
-<%-include("partials/footer")%>
+<%-include("../partials/footer")%>
 
 </body>

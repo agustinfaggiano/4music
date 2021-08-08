@@ -1,6 +1,6 @@
-<%-include("../partials/head.ejs")%>
-
-    <title>Guitarra Yamaha GC41 | 4Music</title>
+<!DOCTYPE html>
+<html lang="es">
+<%-include("../partials/head.ejs", {title: productoDetalle.marca + " " + productoDetalle.modelo})%>
     
 <body class="fourMusic">
     
@@ -10,23 +10,39 @@
         <div class="contenedorMain">
             <div class="tituloBloque">
                 <a href="/"><h5>Inicio  ></h5></a>
-                <a href="#"><h5>Instrumentos de Cuerdas  ></h5></a> 
-                <a href="#"><h5>Guitarras Clásicas</h5></a>
+                <a href="/products/searchByCategory?categoria=<%=productoDetalle.categoria%>">
+                    <h5>
+                        <% switch(productoDetalle.categoria) {  
+                             case "1":%> Instrumentos de Cuerdas
+                                <% break;%>
+                            <% case "2":%> Instrumentos de Percusión 
+                                <% break;%>
+                            <% case "3":%> Instrumentos de Viento 
+                                <%break;%>
+                            <% case "4":%> Teclados y Pianos 
+                                <% break;%>
+                            <% case "5":%> Audio
+                                <% break;%>
+                            <% case "6":%> Otros
+                                <% break;%>
+                        <% } %>
+                    </h5>
+                </a> 
             </div>
             <div class="contenedorSuperior">
                 <div class="contenedorImagenes">
                     <div id="content-wrapper">
                         <div class="column">
                             <div class="contenedorFeatured">
-                                <img id="featured" src="/images/products/Yamaha1.png" alt="imagen1">
+                                <img id="featured" src="/images/products/<%=productoDetalle.imagen%>" alt="imagen1">
                             </div>
                             <div id="slide-wrapper" class="">
                                 <img id="slideLeft" class="arrow" src="/images/arrow-left.png">
-                                <div id="slider" class="">
-                                    <img src="/images/products/Yamaha1.png" alt="imagen1" class="thumbnail active">
-                                    <img src="/images/products/Yamaha2.jpg" alt="imagen2" class="thumbnail">
-                                    <img src="/images/products/Yamaha3.jpg" alt="imagen3" class="thumbnail">
-                                    <img src="/images/products/Yamaha4.jpg" alt="imagen4" class="thumbnail">
+                                <div id="slider" class="">  
+                                    <img src="/images/products/<%=productoDetalle.imagen%>" alt="imagen1" class="thumbnail active">
+                                    <img src="/images/products/<%=productoDetalle.imagen%>" alt="imagen2" class="thumbnail">
+                                    <img src="/images/products/<%=productoDetalle.imagen%>" alt="imagen3" class="thumbnail">
+                                    <img src="/images/products/<%=productoDetalle.imagen%>" alt="imagen4" class="thumbnail">
                                 </div>
                                 <img id="slideRight" class="arrow" src="/images/arrow-right.png">
                             </div>
@@ -36,10 +52,10 @@
             </div>
                 <div class="contenedorDatos">
                     <div class="nombreProducto">
-                        <h2>Guitarra Yamaha GC41</h2>
+                        <h2><%=productoDetalle.titulo  %> <%= productoDetalle.marca %> <%=productoDetalle.modelo %></h2>
                     </div>
                     <div class="precioProducto">
-                        <h3>$145.000</h3>
+                        <h3>$<%=productoDetalle.precio%></h3>
                     </div>
                     <div class="">
                         <a href=#>Consultar por otros medios de pago</a>
@@ -72,31 +88,21 @@
                         <div class="iconoRedes">
                             <a href="http://instagram.com"><i class="fab fa-instagram-square"></i></a>
                         </div>
+                        <br>
+                        
                     </div>
+                    <form action="/products/<%=productoDetalle.id%>/edit" method="GET">
+                        <button type="submit" class="boton-registro">Editar</button>
+                    </form>
+                    <form action="/products/<%=productoDetalle.id%>?_method=DELETE" method="POST" onclick="return confirm('¿Estás seguro de que quieres borrar este articulo?');">
+                        <button type="submit" class="boton-registro">Borrar</button>
+                    </form>
                 </div>
             </div>
             <div class="contenedorDescripcionYFicha">
                 <div class="descripcionItem">
                     <h3 class="tituloBloque">DESCRIPCIÓN</h3>
-                    <p>Guitarra Clásica Yamaha acústica; Desde su lanzamiento a principios de la década de los 90's, nuestra querida GC41 ha ido coleccionando premios y reconocimientos, estableciéndose por derecho propio como la guitarra clásica mejor valorada entre profesores, alumnos y guitarristas principiantes, gracias a su increíble relación calidad-precio.</p> 
-                    <p>La guitarra destaca por su excepcional sonido, confort y prestaciones, dignas de instrumentos de precios superiores.<p>  
-                    </p>
-                </div>
-                <div class="fichaItem">
-                    <h3 class="tituloBloque">ESPECIFICACIONES</h3>
-                    <div class="especificaciones">
-                        <p class="grilla">Ancho</p>
-                        <p class="grilla">Alto</p>
-                        <p class="grilla">Profundidad</p>
-                        <p class="grilla">Maderas</p>
-                    </div>
-                    <div class="valores">
-                        <p class="grilla">37cm</p>
-                        <p class="grilla">99.5cm</p>
-                        <p class="grilla">10cm</p>
-                        <p class="grilla">Pino Abeto, Nogal, Ébano</p>
-                    </div>
-                  
+                    <p><%=productoDetalle.descripcion%></p>
                 </div>
             </div>
         </div>

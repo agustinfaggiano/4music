@@ -59,8 +59,11 @@ main{
     max-height: 100px;
 }
 
+#barraBusqueda {
+    width:60%;
+}
 .input-group{
-    width: 60%;
+    width: 100%;
     padding-right: 5px;
 }
 
@@ -332,10 +335,6 @@ input:hover{
 
 .contenedorDescripcionYFicha{
     width:100%;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    align-items: flex-start;
 }
 .nombreProducto h2, .precioProducto h3{
     font-size: 2em;
@@ -344,8 +343,11 @@ input:hover{
 }
 
 .descripcionItem{
-    width: 50%;
+    width: 100%;
     padding:10px 20px;
+}
+.descripcionItem p {
+    font-size: 1.2em;
 }
 .fichaItem{
     width: 50%;
@@ -357,9 +359,12 @@ input:hover{
 }
 .especificaciones {
     width: 50%;
+    padding-right:5px;
+    border-right:solid 0.7px gray;
 }
 .valores {
     width: 50%;
+    padding-left:5px;
 }
 .tituloBloque{
     width: 100%;
@@ -626,6 +631,80 @@ input:hover{
     margin-top: 20px;
 }
 
+/* ---------------------------------- */
+
+.product-box {
+    background-color: #ffffff;
+    border-radius: 5px;
+    overflow: hidden;
+    transition: 300ms;
+    margin: 20px 0;
+  }
+  
+  .product-box a {
+    display: block;
+  }
+  
+  .product-box_image {
+    border-bottom: 1px solid var(--light-gray);
+  }
+  
+  .product-box_data {
+    padding: 15px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  
+  .product-box_data h2 {
+    font-size: 1.7em;
+    font-weight: 300;
+    margin: 0;
+  }
+  
+  .product-box_data span {
+    font-size: 1.3em;
+    font-weight: 300;
+    color: var(--green);
+    margin: 0 0 0 10px;
+  }
+  
+  .product-box_data p {
+    font-size: 1.1em !important;
+    width: 100%;
+    color: var(--gray);
+    margin: 0;
+    height: 0;
+    transition: 300ms;
+    overflow: hidden;
+  }
+  
+  
+  .product-box:hover {
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+  }
+  
+  .product-box:hover p {
+    height: 40px;
+    margin-top: 15px;
+  }
+  
+  .product-box:hover i {
+    transform: rotate(360deg);
+    box-shadow: 0 0 5px var(--green);
+  }
+  .container {
+      width:100%;
+      padding-right:15px;
+      padding-left:15px;
+      margin-right:auto;
+      margin-left:auto
+    }
+  .products-wrapper {
+    margin-top: 30px;
+    margin-bottom: 30px;
+  }
 /*------Media Queries-------*/
 
 @media (max-width:394px) {
@@ -726,6 +805,12 @@ input:hover{
     .col-3{
         transition: none;
     }
+    .container{
+        max-width:540px
+    }
+    #barraBusqueda {
+        width:35% !important;
+    }
 }
 
 
@@ -745,6 +830,8 @@ input:hover{
     display: block;
     font-size: 25px;
     padding-top: 5px;
+    margin-left:auto;
+    margin-right: auto;
     }
 
     .botonLupa{
@@ -754,13 +841,13 @@ input:hover{
     .lupa{
         font-size: 20px;
     }
-    .contenedorSuperior, .contenedorDescripcionYFicha{
+    .contenedorSuperior{
         display: inline-block;
     }
     .nombreProducto h2, .precioProducto h3{
         font-size: 2.2em !important;
     }
-    .contenedorImagenes, .contenedorDatos, .fichaItem, .descripcionItem{
+    .contenedorImagenes, .contenedorDatos, .fichaItem{
         width: 100%;
     }
     .descripcionItem{
@@ -792,7 +879,12 @@ input:hover{
     .informacion-contacto, .medios-pago, .horario-ubicacion{
         padding-left:1% !important;
     } 
-    
+    .container{
+        max-width:720px
+    }
+    #barraBusqueda {
+        width:50%;
+    }
 }
 
 
@@ -842,7 +934,10 @@ input:hover{
         margin-left:auto;
         margin-right: auto;
     }
-    
+    .container{
+        max-width:960px
+    }
+
 }
 
 
@@ -864,5 +959,11 @@ input:hover{
     }
     .informacion-contacto, .medios-pago, .horario-ubicacion{
         padding-left:3%;
-    }    
+    }   
+    .container{
+        max-width:1140px
+    } 
+    .product-box_data p {
+        font-size: 0.9em !important;
+      }
 }
