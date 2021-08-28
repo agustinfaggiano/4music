@@ -1,8 +1,10 @@
 // ************ Require's ************
 const express = require ("express");
+const session = require ("express-session");
 const path = require ("path");
 const methodOverride =  require('method-override'); // Pasar poder usar los métodos PUT y DELETE
-
+const userLoggedMiddleware = require ('./src/middlewares/userLoggedMiddleware');
+const cookie = require("cookie-parser");
 
 // Express
 const app = express();
@@ -15,6 +17,15 @@ app.use(express.static(rutaCarpetaPublic)); //indico los archivos estáticos pub
 app.use(express.urlencoded({ extended: false }));
 app.use(methodOverride('_method')); // Pasar poder pisar el method="POST" en el formulario por PUT y DELETE
 app.use(express.json());
+app.use(session({
+    secret: "4 Music Secreto",
+    resave: false,
+    saveUninitialized: false
+}));  // Session como Middleware Global
+app.use(cookie());
+
+app.use(userLoggedMiddleware); // Debe estar siempre despues del Middleware de Session
+
 
 // ************ Template Engine ************
 app.set("view engine", "ejs");
