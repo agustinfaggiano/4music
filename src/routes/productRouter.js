@@ -4,6 +4,8 @@ const productRouter = express.Router();
 const path = require('path');
 const multer = require('multer');
 const authMiddleware = require("../middlewares/authMiddleware");
+const validationNewItem = require("../middlewares/validationNewItem");
+const validationEditItem = require("../middlewares/validationEditItem");
 
 
 // ************ Controller Require ************
@@ -30,21 +32,24 @@ const uploadFile = multer({ storage: configuracionImagen });
 /* Listar Todos los Productos */
 productRouter.get("/", controladorProducto.listadoProductos); // Listado de Productos
 
+/* Listar los Productos Correspondientes a un Usuario */
+productRouter.get("/showAll/:idUser", controladorProducto.listadoProductosUsuario); // Listado de Productos de un Usuario
+
 /* Detalle de 1 Producto */
-productRouter.get("/detail/:id", controladorProducto.detalleProducto); // Detalle de un producto particular
+productRouter.get("/detail/:idProducto", controladorProducto.detalleProducto); // Detalle de un producto particular
 
 
 /* Publicar Nuevo Producto */
 
 productRouter.get("/create", authMiddleware, controladorProducto.productoNuevo); // Formulario de Creacion de Producto
-productRouter.post("/", uploadFile.single('imagenes') , controladorProducto.almacenarNuevoProducto); // Almacenamiento del nuevo producto
+productRouter.post("/", uploadFile.array('imagenes',4), validationNewItem, controladorProducto.almacenarNuevoProducto); // Almacenamiento del nuevo producto
 
 productRouter.get("/all-ok", authMiddleware, controladorProducto.publicacionExitosa); //Vista de Publicacion Exitosa
 
 
 /* Editar Producto */
-productRouter.get("/:id/edit", authMiddleware, controladorProducto.editarProducto); // Formulario Edición del Producto
-productRouter.put("/:id/edit", uploadFile.single('imagenes') ,controladorProducto.almacenarProductoEditado); // Guardar Producto Editado
+productRouter.get("/:idProducto/edit", authMiddleware, controladorProducto.editarProducto); // Formulario Edición del Producto
+productRouter.put("/:idProducto/edit", uploadFile.array('imagenes',4), validationEditItem ,controladorProducto.almacenarProductoEditado); // Guardar Producto Editado
 
 /* Borrar Producto */
 productRouter.delete("/:id", controladorProducto.eliminarProducto); // Eliminar un Producto 
@@ -53,8 +58,12 @@ productRouter.delete("/:id", controladorProducto.eliminarProducto); // Eliminar 
 productRouter.get("/search", controladorProducto.resultadoBusqueda); // Busqueda Basica a mejorar
 
 
+/* Buscar Productos por Estilo Musical */
+productRouter.get("/searchByStyle", controladorProducto.busquedaPorGenero); // Busqueda Basica a mejorar
+
 /* Buscar Productos por Categoría */
 productRouter.get("/searchByCategory", controladorProducto.busquedaPorCategoria); // Busqueda Basica a mejorar
+
 
 
 module.exports = productRouter;

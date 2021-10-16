@@ -37,7 +37,7 @@ main{
     padding-right: 10px;
 }
 .headerDerecha {
-    width:22%;
+    width:24%;
     padding-left: 15px;
 }
 .contenedorOpcionesUsuario, .contenedorLogosRedes {
@@ -73,6 +73,7 @@ main{
 .menuHamburguesa{
     display: none;
 }
+
 .btn-secondary{
     background-color: brown;
     border:none;
@@ -605,6 +606,16 @@ input:hover{
 
 }
 
+#tachito{
+    border: none;
+    font-size: 20px;
+}
+
+#tachito:hover{
+    color: crimson;
+    transition: .3s;
+}
+
 .entrega, .sumatoria{
     width: 50%;
 }
@@ -624,7 +635,7 @@ input:hover{
 }
 
 .fotoProductoCarrito{
-    width:90%;
+    width:40%;
 }
 
 .contenedorPerfilUsuario {
@@ -633,9 +644,17 @@ input:hover{
 
 .imagenPerfil {
     max-width: 25vw;
+    margin:10px 0 20px;
+    
 }
 
 /* ---------------------------------- */
+
+.portadaProducto {
+    object-fit: contain;
+    width: 100%;
+    height: 280px;
+}
 
 .product-box {
     background-color: #ffffff;
@@ -804,7 +823,7 @@ input:hover{
         border-bottom: solid .75px grey;
     }
     .fotoProductoCarrito{
-        width:100%;
+        width:90%;
     }
     .selectorCantidad{
         padding:0;
@@ -818,6 +837,9 @@ input:hover{
     .container{
         max-width:540px
     }
+    .portadaProducto {
+        height: 180px;
+    }
     
 }
 
@@ -826,9 +848,14 @@ input:hover{
     body {
         padding-top: 34vh !important;
     }
-    #headerInferior, .headerDerecha, #busqueda{
+    #headerInferior, .headerDerecha{
         display: none !important;
     }
+    #busqueda{
+        display: none;
+    }
+   
+
     .input-group{
         width:50px;
         padding-top: 10px;
@@ -892,7 +919,7 @@ input:hover{
         max-width:720px
     }
     #barraBusqueda {
-        width:15% !important;
+        width:15%;
     }
 }
 
@@ -906,7 +933,7 @@ input:hover{
         margin-left: 39%;
         display: flex;
         flex-wrap: wrap;
-        padding-left: 0;
+        
     }
     .contenedorOpcionesUsuario{
         width: 50%;
@@ -974,5 +1001,8 @@ input:hover{
     } 
     .product-box_data p {
         font-size: 0.9em !important;
-      }
+    }
+    .headerDerecha{
+        padding-left:1px !important
+    }
 }

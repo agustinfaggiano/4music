@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
-<%-include("../partials/head.ejs", {title: productoDetalle.marca + " " + productoDetalle.modelo})%>
+<%-include("../partials/head.ejs", {title: productoDetalle.titulo + " " + productoDetalle.modelo})%>
     
 <body class="fourMusic">
     
@@ -10,20 +10,22 @@
         <div class="contenedorMain">
             <div class="tituloBloque">
                 <a href="/"><h5>Inicio  ></h5></a>
-                <a href="/products/searchByCategory?categoria=<%=productoDetalle.categoria%>">
+                <a href="/products/searchByCategory?categoria=<%=productoDetalle.id_categoria%>">
                     <h5>
-                        <% switch(productoDetalle.categoria) {  
-                             case "1":%> Instrumentos de Cuerdas
+                        <% switch(productoDetalle.id_categoria) {  
+                             case 1:%> Instrumentos de Viento
                                 <% break;%>
-                            <% case "2":%> Instrumentos de Percusión 
+                            <% case 2:%> Accesorios 
                                 <% break;%>
-                            <% case "3":%> Instrumentos de Viento 
+                            <% case 3:%> Audio
                                 <%break;%>
-                            <% case "4":%> Teclados y Pianos 
+                            <% case 4:%> Teclados y Pianos 
                                 <% break;%>
-                            <% case "5":%> Audio
+                            <% case 5:%> Instrumentos de Percusión
                                 <% break;%>
-                            <% case "6":%> Otros
+                            <% case 6:%> Instrumento de Cuerdas
+                                <% break;%>
+                            <% case 7:%> Baterias
                                 <% break;%>
                         <% } %>
                     </h5>
@@ -33,16 +35,25 @@
                 <div class="contenedorImagenes">
                     <div id="content-wrapper">
                         <div class="column">
+                           
                             <div class="contenedorFeatured">
-                                <img id="featured" src="/images/products/<%=productoDetalle.imagen%>" alt="imagen1">
+                                <img id="fotoPrincipal" style="display:none" src="/images/products/<%=productoDetalle.fotos[0].url%>"> 
+                                <img id="featured" src="/images/products/<%=productoDetalle.fotos[0].url%>" alt="imagen1">        
                             </div>
+                            
+                            
                             <div id="slide-wrapper" class="">
                                 <img id="slideLeft" class="arrow" src="/images/arrow-left.png">
                                 <div id="slider" class="">  
-                                    <img src="/images/products/<%=productoDetalle.imagen%>" alt="imagen1" class="thumbnail active">
-                                    <img src="/images/products/<%=productoDetalle.imagen%>" alt="imagen2" class="thumbnail">
-                                    <img src="/images/products/<%=productoDetalle.imagen%>" alt="imagen3" class="thumbnail">
-                                    <img src="/images/products/<%=productoDetalle.imagen%>" alt="imagen4" class="thumbnail">
+                                
+                                <% for (let i = 0; i < productoDetalle.fotos.length; i++) { %>   
+                                    <%if(i==0){%>
+                                        <img src="/images/products/<%=productoDetalle.fotos[i].url%>" alt="imagen1" class="thumbnail active">
+                                    <%}  
+                                    else {%>
+                                        <img src="/images/products/<%=productoDetalle.fotos[i].url%>" alt="imagen2" class="thumbnail">
+                                    <% }
+                                 } %>
                                 </div>
                                 <img id="slideRight" class="arrow" src="/images/arrow-right.png">
                             </div>
@@ -52,19 +63,20 @@
             </div>
                 <div class="contenedorDatos">
                     <div class="nombreProducto">
-                        <h2><%=productoDetalle.titulo  %> <%= productoDetalle.marca %> <%=productoDetalle.modelo %></h2>
+                        <p id="identificadorProducto" style="display:none"><%=productoDetalle.id %></p>
+                        <h2 id="tituloProducto"><%=productoDetalle.titulo  %> <%= productoDetalle.marca %> <%=productoDetalle.modelo %></h2>
                     </div>
                     <div class="precioProducto">
-                        <h3>$<%=productoDetalle.precio%></h3>
+                        <h3 id="">$<p id="precioInstrumento" style="display:inline"><%=productoDetalle.precio%></p></h3>
                     </div>
                     <div class="">
                         <a href=#>Consultar por otros medios de pago</a>
                     </div>
                     <div class="sectorComprar">
                         <div class="tituloCantidad"><p>Cantidad</p></div>
-                        <div><input class="cantidadAComprar" type="number" value="1"></div>
+                        <div><input class="cantidadAComprar" id="cantidadAComprar" type="number" value="1"></div>
                         <div class="contenedorBotonCompra">
-                            <a href="/cart"><button type="button" class="btn btn-dark botonComprar"><i class="fas fa-cart-plus carrito"></i>COMPRAR</button></a>
+                            <button type="button" id="agregarCarrito" class="btn btn-dark botonComprar"><i class="fas fa-cart-plus carrito"></i>COMPRAR</button>
                         </div>
                     </div>
                     <div class="sectorFlex">
@@ -91,12 +103,15 @@
                         <br>
                         
                     </div>
-                    <form action="/products/<%=productoDetalle.id%>/edit" method="GET">
-                        <button type="submit" class="boton-registro">Editar</button>
-                    </form>
-                    <form action="/products/<%=productoDetalle.id%>?_method=DELETE" method="POST" onclick="return confirm('¿Estás seguro de que quieres borrar este articulo?');">
-                        <button type="submit" class="boton-registro">Borrar</button>
-                    </form>
+                    <% if(locals.usuarioLogueado) {
+                        if(productoDetalle.id_usuario_FK == locals.usuarioLogueado.id) { %>
+                            <a href="/products/<%=productoDetalle.id%>/edit%>"><button type="submit" class="boton-registro">Editar</button></a>
+                    
+                        <form action="/products/<%=productoDetalle.id%>?_method=DELETE" method="POST" onclick="return confirm('¿Estás seguro de que quieres borrar este articulo?');">
+                            <button type="submit" class="boton-registro">Borrar</button>
+                        </form>
+                        <% } 
+                    } %>
                 </div>
             </div>
             <div class="contenedorDescripcionYFicha">
@@ -139,7 +154,7 @@
 
     </script>
 
-
+    <script src ="/js/carrito.js" type="text/javascript"></script>
 
     
 

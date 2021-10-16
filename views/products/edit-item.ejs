@@ -10,86 +10,81 @@
         <div class="contenedorMain">
             <div class="formulario">         
                 <h2 class="bienvenida">Editar Producto</h2>
-                <form id="publicarProducto" action="/products/<%=productoaEditar.id%>/edit?_method=PUT" method="POST"  enctype="multipart/form-data">
+                <form id="publicarProducto" action="/products/<%=producto.id%>/edit?_method=PUT" method="POST"  enctype="multipart/form-data">
                     <div class="lineaForm">
+                        <p id="tituloErrorP" style="color: blue;"></p>
                         <label for="titulo">Título del Aviso</label>
-                        <input value="<%=productoaEditar.titulo %>" type="text" placeholder="Ej: Fender" name="titulo" id="titulo" required  minlength="2" maxlength="25">     
+                        <% if(locals.errors && errors.titulo) { %>
+                            <p style="color: red;"><%= errors.titulo.msg %></p>
+                        <% } %>
+                        <input value="<%=producto.titulo %>" type="text" placeholder="Ej: Fender" name="titulo" id="titulo"  >     
                     </div>
                     <div class="lineaForm">
+                        <p id="marcaErrorP" style="color: blue;"></p>
                         <label for="marca">Marca</label>
-                        <input value="<%=productoaEditar.marca %>" type="text" name="marca" id="marca" placeholder="Ej: Fender" required  minlength="2" maxlength="25">     
+                        <% if(locals.errors && errors.marca) { %>
+                            <p style="color: red;"><%= errors.marca.msg %></p>
+                        <% } %>
+                        <input value="<%=producto.marca %>" type="text" name="marca" id="marca" placeholder="Ej: Fender"  >     
                     </div>
                     <div class="lineaForm">
+                        <p id="errorModeloP" style="color: blue;"></p>
                         <label for="modelo">Modelo</label>
-                        <input value="<%=productoaEditar.modelo %>" type="text" name="modelo" id="modelo" required  placeholder="Ej: Stratocaster"  minlength="2" maxlength="30">    
+                        <% if(locals.errors && errors.modelo) { %>
+                            <p style="color: red;"><%= errors.modelo.msg %></p>
+                        <% } %>
+                        <input value="<%=producto.modelo %>" type="text" name="modelo" id="modelo"  placeholder="Ej: Stratocaster"  >    
+                    </div>
+                    <div class="lineaForm">
+                        <p id="errorPrecioP" style="color: blue;"></p>
+                        <label for="precio">Precio: $</label>
+                        <% if(locals.errors && errors.precio) { %>
+                            <p style="color: red;"><%= errors.precio.msg %></p>
+                        <% } %>
+                        <input value="<%=producto.precio %>" type="text" name="precio" id="precio" >    
                     </div>
                     <div class="lineaForm"> 
+                        <p id="errorCategoriaP" style="color: blue;"></p>
                         <label for="selectegoria">Categoría</label>
-                        <select name="selectegoria">
-                            <% switch(productoaEditar.categoria) { 
-                                case "1": %>
-                            <option value="1" selected>Instrumentos de Cuerdas</option>
-                            <option value="2">Instrumentos de Percusión</option>
-                            <option value="3">Instrumentos de Viento</option>
-                            <option value="4">Accesorios</option>
-                            <option value="5">Audio</option>
-                            <option value="6">Otros</option>
-                            <% break; 
-                            case "2": %>
-                            <option value="1">Instrumentos de Cuerdas</option>
-                            <option value="2" selected>Instrumentos de Percusión</option>
-                            <option value="3">Instrumentos de Viento</option>
-                            <option value="4">Accesorios</option>
-                            <option value="5">Audio</option>
-                            <option value="6">Otros</option>
-                            <% break; 
-                            case "3": %>
-                            <option value="1" >Instrumentos de Cuerdas</option>
-                            <option value="2">Instrumentos de Percusión</option>
-                            <option value="3" selected>Instrumentos de Viento</option>
-                            <option value="4">Accesorios</option>
-                            <option value="5">Audio</option>
-                            <option value="6">Otros</option>
-                            <% break; 
-                            case "4": %>
-                            <option value="1">Instrumentos de Cuerdas</option>
-                            <option value="2">Instrumentos de Percusión</option>
-                            <option value="3">Instrumentos de Viento</option>
-                            <option value="4" selected>Accesorios</option>
-                            <option value="5">Audio</option>
-                            <option value="6">Otros</option>
-                            <% break; 
-                            case "5": %>
-                            <option value="1">Instrumentos de Cuerdas</option>
-                            <option value="2">Instrumentos de Percusión</option>
-                            <option value="3">Instrumentos de Viento</option>
-                            <option value="4">Accesorios</option>
-                            <option value="5" selected>Audio</option>
-                            <option value="6">Otros</option>
-                            <% break; 
-                            case "6": %>
-                            <option value="1">Instrumentos de Cuerdas</option>
-                            <option value="2">Instrumentos de Percusión</option>
-                            <option value="3">Instrumentos de Viento</option>
-                            <option value="4">Accesorios</option>
-                            <option value="5">Audio</option>
-                            <option value="6" selected>Otros</option>
-                            <% break; }%>   
+                        
+                        <select name="selectegoria" id="categoria">
+                            <option value="">Seleccionar</option>
+                            <% for (let i = 0; i < categoria.length; i++) { %>
+                                <% if (categoria[i].id == producto.id_categoria) { %>
+                                    <option value="<%=categoria[i].id%>" selected>
+                                        <%=categoria[i].nombre%>
+                                    </option>
+                                <% } else { %>
+                                    <option value="<%=categoria[i].id%>">
+                                        <%=categoria[i].nombre%>
+                                    </option>
+                               <% } %>
+            
+            
+                            <% } %>
                           </select>
                     </div>
                     <div class="lineaForm">
+                        <p id="errorDescripcionP" style="color: blue;"></p>
                         <label for="descripcion">Descripción</label>
-                       <textarea class="areaTexto" required name="descripcion" placeholder="Ingresá la Descripción del producto" minlength="5" maxlength="400"><%=productoaEditar.descripcion %>
+                        <% if(locals.errors && errors.descripcion) { %>
+                            <p style="color: red;"><%= errors.descripcion.msg %></p>
+                        <% } %>
+                       <textarea class="areaTexto" name="descripcion" placeholder="Ingresá la Descripción del producto" minlength="5" maxlength="400" id="descripcion"><%=producto.descripcion %>
                     </textarea>   
                     </div>
                     <div class="lineaForm">
+                        <p id="errorFotoP" style="color: blue;"></p>
                         <label for="imagenes">Imágenes</label>
-                        <input type="file" name="imagenes" accept="image/png, image/gif, image/jpeg" required/>
+                        <% for(let i=0; i < producto.fotos.length; i++) {%>
+                        <img class="imagenPerfil" src="/images/products/<%=producto.fotos[i].url%>">
+                        <% } %>
+                        <% if(locals.errors && errors.imagenes) { %>
+                            <p style="color: red;"><%= errors.imagenes.msg %></p>
+                        <% } %>
+                        <input type="file" id="imagenes" multiple name="imagenes" accept="image/png, image/gif, image/jpeg"/>
                     </div>
-                    <div class="lineaForm">
-                        <label for="precio">Precio: $</label>
-                        <input value="<%=productoaEditar.precio %>" type="text" name="precio" id="precio" required>    
-                    </div>
+                   
                     <div class="lineaForm"> 
                         <a href="/"><button type="button" class="boton-registro">Volver</button></a>
                     </div>
@@ -107,6 +102,6 @@
     
     <%-include("../partials/footer.ejs")%>
 
- 
+ <script src="../../js/editItem.js"></script>
 </body>
 </html>

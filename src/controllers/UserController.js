@@ -1,11 +1,14 @@
 /* Requires */
-const fs = require('fs');
+
 const path = require('path');
 const {validationResult} = require("express-validator");
 const bcryptjs = require("bcryptjs")
-/* Lectura de Usuarios del Json */
-const usersFilePath = path.join(__dirname, '../data/usersDataBase.json');
-const usuarios = JSON.parse(fs.readFileSync(usersFilePath, 'utf-8'));
+
+
+const db = require ("../../database/models");
+const { sequelize, Sequelize } = require('../../database/models');
+//const { where } = require('sequelize/types');
+const op = Sequelize.Op;
 
 
 const controladorUsers = {
@@ -14,58 +17,68 @@ const controladorUsers = {
         },
         ingresar: (req, res) => {
             let errors = validationResult(req)
+                if(errors.isEmpty()){ 
+                        
+                    let usuarios;
+                    db.Usuario.findAll()
+                        .then((resultados) => {
+                            usuarios = resultados;
 
-            if(errors.isEmpty()){ 
+                            let emailBuscar = req.body.email;
+                            let passwordIngresada = req.body.contraseña;
+                            let usuarioEncontrado;
+                            let emailEncontrado;
+                            for (let i of usuarios){
+                                if (emailBuscar == i.email) {
+                                    emailEncontrado = 1;
+                                    if(bcryptjs.compareSync(passwordIngresada, i.clave)){
+                                        usuarioEncontrado = i; //usuario encontrado en el JSON
+                                        break;
+                                    }
+                                }
+                            }
+                            if(usuarioEncontrado){
+                                // delete usuarioEncontrado.password; // borro la Contraseña del Usuario a Loguearse por Seguridad
+                                req.session.usuarioLogueado = usuarioEncontrado; // Guardo el Usuario en Session
+                                if (req.body.recordarUsuario) {
+                                    res.cookie("userEmail", req.body.email, {maxAge: (1000 * 60) * 2});
+                                }
+                                res.redirect ("/"); // Usuario Logueado Exitosamente
+                            }
+                            else {
+                                if(emailEncontrado == 1){
+                                    res.render("login", {
+                                        errors: {
+                                            contraseña: {
+                                                msj:'Contraseña Incorrecta'
+                                            }   
+                                        },
+                                    old: req.body}); // Email Correcto pero Password Incorrecto       
+                                }
+                                else{
+                                    res.render("login",{
+                                        errors: {
+                                            email: {
+                                                msj:'No pudimos encontrar tu Email'
+                                            }
+                                        },
+                                        old: req.body}); // Datos Incorrectos
+                                }
+                            } 
 
-                let emailBuscar = req.body.email;
-                let passwordIngresada = req.body.contraseña;
-                let usuarioEncontrado;
-                let emailEncontrado
-                for (let i of usuarios){
-                    if (emailBuscar == i.email) {
-                        emailEncontrado = 1;
-                        if(bcryptjs.compareSync(passwordIngresada, i.password)){
-                            usuarioEncontrado = i; //usuario encontrado en el JSON
-                            break;
-                        }
+                         
+                        });
+                    } 
+                    else {
+                        if (errors.errors.length > 0){
+                            res.render("login", {errors: errors.mapped(),
+                            old: req.body});
+                            
+                        };
                     }
-                }
-                if (usuarioEncontrado){
-                   // delete usuarioEncontrado.password; // borro la Contraseña del Usuario a Loguearse por Seguridad
-                    req.session.usuarioLogueado = usuarioEncontrado; // Guardo el Usuario en Session
-                    if (req.body.recordarUsuario) {
-                        res.cookie("userEmail", req.body.email, {maxAge: (1000 * 60) * 2});
-                    }
-                    res.redirect ("/"); // Usuario Logueado Exitosamente
-                }
-                else {
-                    if(emailEncontrado == 1){
-                        res.render("login", {
-                            errors: {
-                                contraseña: {
-                                    msj:'Contraseña Incorrecta'
-                                }
-                            },
-                            old: req.body}); // Email Correcto pero Password Incorrecto       
-                    }
-                    else{
-                        res.render("login",{
-                            errors: {
-                                email: {
-                                    msj:'No pudimos encontrar tu Email'
-                                }
-                            },
-                            old: req.body}); // Datos Incorrectos
-                    }
-                }
-            } 
-            else {
-                if (errors.errors.length > 0){
-                    res.render("login", {errors: errors.mapped(),
-                    old: req.body});
                     
-                };
-            }
+               
+            
         },
         cerrarSesion: (req, res) => {
             res.clearCookie("userEmail"); // Elimino la Cookie
@@ -74,65 +87,75 @@ const controladorUsers = {
         },
         perfil: (req, res) => {
             res.render("perfil");
-           // console.log(req.cookies.userEmail);
         },
         datosUsuario: (req, res) => {
             let idURL = req.params.id;
-            let usuarioEncontrado;
+            
 
-            for (let u of usuarios){
-                if (u.id==idURL){
-                    usuarioEncontrado=u;
-                    break;
-                }
-            }
+            db.Usuario.findByPk(idURL)
+            .then((resultados) => {
+                
+    
+                res.render("detallePerfil", {usuarioDetalle: resultados});
+            
+                });
 
-            res.render("detallePerfil", {usuarioDetalle: usuarioEncontrado});
-        },
+            },
         registro: (req, res) => {
             res.render("register")
         },
         crearNuevoUsuario: (req, res) => {
-            let errors = validationResult(req)
-            
-            
-            
+            let errors = validationResult(req);
+          
             if(errors.isEmpty()){ 
-            
-            idNuevo=0;
 
-            for (let i of usuarios){
-                if (idNuevo<i.id){
-                    idNuevo=i.id;
-                }
-            }
 
-            idNuevo++;
+                db.Usuario.findOne({
+                    where: {
+                        email: {[op.like]: req.body.email}
+                    }
+                })
+                .then(function(resultado){
+                    
+                    if (!resultado){
 
             let nombreImagen = req.file.filename;
-            let compradorSitio = false; // por  defecto es vendedor
+            let compradorSitio = "vendedor"; // por  defecto es vendedor
             let passEncriptada = bcryptjs.hashSync(req.body.contraseña, 10);
 
             if(req.body.tipoUsuario == 1){
-                compradorSitio = true; // si el valor es 1, se lo registra como comprador
+                compradorSitio = "comprador"; // si el valor es 1, se lo registra como comprador
             }
 
             let usuarioNuevo =  {
-                id:   idNuevo,
                 nombre: req.body.nombre ,    
                 apellido: req.body.apellido ,
                 email: req.body.email ,
-                password: passEncriptada,
+                clave: passEncriptada,
                 telefono: req.body.telefono,
-                fotoPerfil: nombreImagen,
-                comprador: compradorSitio
+                foto_perfil: nombreImagen,
+                rol: compradorSitio
             };
-
-            usuarios.push(usuarioNuevo);
-
-            fs.writeFileSync(usersFilePath, JSON.stringify(usuarios,null,' '));
+            
+            db.Usuario.create(usuarioNuevo);
 
             res.redirect("/users/registracionOK"); 
+            }
+
+            else {
+                res.render("register",{
+                    errors: {
+                        email: {
+                            msg:'El email ingresado ya existe'
+                        }
+                    },
+                    old: req.body})
+            }  
+                })
+                
+                
+            
+              
         } 
             else {
                 if (errors.errors.length > 0){
@@ -150,55 +173,66 @@ const controladorUsers = {
             let idURL = req.params.id;
             let usuarioEncontrado;
 
-            for(let u of usuarios){
-                if (idURL == u.id){
-                    usuarioEncontrado = u;
-                }
-            }
-            res.render("EditarUsuario", {usuarioaEditar: usuarioEncontrado});
+            db.Usuario.findByPk(idURL)
+                .then(function(usuario){
+                    usuarioEncontrado=usuario;
+                    res.render("EditarUsuario", {usuarioaEditar: usuarioEncontrado});
+                });
         },
         almacenarUsuarioEditado: (req, res) => {
             let idURL = req.params.id;
-            let nombreImagen = req.file.filename;
+            let nombreImagen;
             
             let usuarioEncontrado;
-            let compradorSitio;
+            
+            db.Usuario.findByPk(idURL)
+                .then(function(usuario){
+                    usuarioEncontrado=usuario; //guardo en UsuarioEncontrado el que tiene el ID recibido como parametro
+                    if(req.file){
+                        nombreImagen = req.file.filename;
+                    }
+                    else{
+                        nombreImagen = usuarioEncontrado.foto_perfil;
+                    }
+                   
+                db.Usuario.update({
+                nombre: req.body.nombre ,    
+                apellido: req.body.apellido ,
+                email: req.body.email ,
+                telefono: req.body.telefono,
+                foto_perfil: nombreImagen,
+                rol: req.body.tipoUsuario
+                }, {
+                    where: {
+                        id: idURL
+                    }
+                })
 
-            if(req.body.tipoUsuario == 1){
-                compradorSitio = true; // si el valor es 1, se lo guarda como comprador
-            }
-            else{
-                compradorSitio = false;
-            }
-
-            for (let u of usuarios){
-                if(idURL == u.id){
-                    u.nombre = req.body.nombre ;   
-                    u.apellido = req.body.apellido;
-                    u.email = req.body.email;
-                    u.password = u.password;
-                    u.telefono = req.body.telefono;
-                    u.fotoPerfil = nombreImagen;
-                    u.comprador = compradorSitio;
-                    usuarioEncontrado= u;
-                    break;
-                }
-            }
-
-            fs.writeFileSync(usersFilePath, JSON.stringify(usuarios,null," "))
-
-            req.session.usuarioLogueado = usuarioEncontrado; // Guardo el Usuario con los nuevos Datos en Session
-            res.render("detallePerfil", {usuarioDetalle: usuarioEncontrado});
+                let usuarioActualizado = {
+                    id: idURL,
+                    nombre: req.body.nombre, 
+                    apellido:  req.body.apellido,
+                    email: req.body.email,
+                    clave: usuarioEncontrado.clave,
+                    telefono: req.body.telefono,
+                    foto_perfil: nombreImagen,
+                    rol: req.body.tipoUsuario
+                };
+                usuarioEncontrado = usuarioActualizado; // actualizo la Variable para mandar a la vista
+                
+                req.session.usuarioLogueado = usuarioEncontrado; // Guardo el Usuario con los nuevos Datos en Session
+                res.render("detallePerfil", {usuarioDetalle: usuarioEncontrado});
+            });
         },
         eliminarCuenta: (req, res) => {
             let idURL = req.params.id;
 
-            let Nusuarios = usuarios.filter(function(e){
-                return idURL != e.id;
+            db.Usuario.destroy({
+                where: {
+                    id: idURL
+                }
             })
 
-            fs.writeFileSync(usersFilePath, JSON.stringify(Nusuarios,null," "));
-            
             req.session.destroy();
             res.redirect("/"); 
         }

@@ -29,14 +29,16 @@
         </div>
         <div class="caja1">
             <h4>Foto de Perfil</h4>
-            <img class="imagenPerfil" src="/images/users/<%= usuarioDetalle.fotoPerfil %>"/>
+            
+            <img class="imagenPerfil" src="/images/users/<%=usuarioDetalle.foto_perfil%>"/>
+            
         </div>
         <div class="caja1">
             <h4>Usuario Tipo</h4>
-            <% if(locals.usuarioDetalle.comprador) { %>
-                <h4>Comprador</h4>
+            <% if(locals.usuarioDetalle.rol) { %>
+                <h4><%=usuarioDetalle.rol%></h4>
             <% } else { %>
-                <h4>Vendedor</h4>
+                <h4>Indefinido</h4>
             <% } %>
         </div>
     </div>
