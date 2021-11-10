@@ -1,6 +1,6 @@
 window.addEventListener("load", function() {
 
-    let formulario = document.getElementById("publicarProducto");
+    let formulario = document.querySelector(".formulario-NewItem");
     let titulo = document.getElementById("titulo");
     let marca = document.getElementById("marca");
     let modelo = document.getElementById("modelo");
@@ -41,7 +41,7 @@ window.addEventListener("load", function() {
             errorTitulo.push("Ingrese un titulo")
             key = true;
         }
-        else if (titulo.value.length < 2 && titulo.value.length > 25) {
+        else if (titulo.value.length < 3 || titulo.value.length > 25) {
             errorTitulo.push("Ingrese un titulo de hasta 25 carácteres")
             key = true;
         }
@@ -98,6 +98,10 @@ window.addEventListener("load", function() {
             key = true;
         }
 
+        else if(imagen.files.length > 4){
+            errorImagen.push("Puedes ingresar hasta 4 imagenes");
+            key = true;
+        }
 
 
         if(generoMusical.value === "" || generoMusical.value === null) {
@@ -105,8 +109,6 @@ window.addEventListener("load", function() {
             key = true;
         }
         
-
-
 
         if(stock.value === "" || stock.value === null) {
             errorStock.push("Ingrese una cantidad disponible")

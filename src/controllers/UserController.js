@@ -224,30 +224,57 @@ const controladorUsers = {
                 res.render("detallePerfil", {usuarioDetalle: usuarioEncontrado});
             });
         },
-        eliminarCuenta: (req, res) => {
+        eliminarCuenta: async (req, res) => {
             let idURL = req.params.id;
+            let productosEncontrados= await db.Producto.findAll({
+                where:{
+                    id_usuario_FK: idURL
+                }});
+            if(productosEncontrados.length > 0){
 
-            db.Usuario.destroy({
+                for(let x=0; x < productosEncontrados.length; x++){
+                    await db.Foto.destroy({
+                        where: { id_producto: productosEncontrados[x].id} 
+                    }); 
+                    await db.Producto_Genero.destroy({
+                        where: { id_producto: productosEncontrados[x].id} 
+                    });
+                    await db.Producto.destroy({
+                        where:{
+                            id: productosEncontrados[x].id
+                        }
+                    }); 
+        
+                }  
+            }
+           
+            await db.Usuario.destroy({
                 where: {
                     id: idURL
                 }
             })
-
+    
+               
+            
             req.session.destroy();
             res.redirect("/"); 
+           
         },
-        listarUsuario: (req, res) =>{
+        listadoUsuarios: (req, res) =>{
         
-            db.Usuario.findAll()
+            db.Usuario.findAll({
+                order: [
+                    ['id', 'DESC']
+            ]})
                 .then(usuarios => {
 
                     return res.json( {
-                        total: usuarios.length,
-                        datos: usuarios })
+                        count: usuarios.length,
+                        users: usuarios })
                 })
                 
         },   
-        mostrarUsuario: (req, res) =>{
+        usuario: (req, res) =>{
         
             db.Usuario.findByPk(req.params.id)
                 .then(usuario => {

@@ -10,25 +10,32 @@
 
 <div class="contenedorPerfilUsuario">
     <h2 class="bienvenida">Bienvenido <%= locals.usuarioLogueado.nombre %> <%= locals.usuarioLogueado.apellido %>!</h2>
-
-    <a href="/products/create">
-        <button type="button" class="boton-registro">
-            Publicar nuevo producto
-        </button>
-    </a>
+    
+    <%if(locals.usuarioLogueado.rol =="Vendedor" || locals.usuarioLogueado.rol =="vendedor" || locals.usuarioLogueado.rol == "2"){ %>
+        <a href="/products/create">
+            <button type="button" class="boton-registro">
+                Publicar nuevo producto
+            </button>
+        </a>
+        <a href="http://localhost:3001/">
+            <button type="button" class="boton-registro">
+                Panel de Administración
+            </button>
+        </a>
+        <a href="/products/showAll/<%=locals.usuarioLogueado.id%>">
+            <button type="button" class="boton-registro">
+                Mis publicaciones
+            </button>
+        </a>
+        <a href="#">
+            <button type="button" class="boton-registro">
+                Mis ventas
+            </button>
+        </a>
+    <%}%>
     <a href="/users/userData/<%=locals.usuarioLogueado.id%>">
         <button type="button" class="boton-registro">
             Mis datos
-        </button>
-    </a>
-    <a href="/products/showAll/<%=locals.usuarioLogueado.id%>">
-        <button type="button" class="boton-registro">
-            Mis publicaciones
-        </button>
-    </a>
-    <a href="#">
-        <button type="button" class="boton-registro">
-            Mis ventas
         </button>
     </a>
     <a href="#">
@@ -41,6 +48,7 @@
             Carrito de Compras
         </button>
     </a>
+    <a href="/">
     <form action="/users/<%=locals.usuarioLogueado.id%>?_method=DELETE" method="POST" onclick="return confirm('¿Estás seguro de que quieres eliminar tu cuenta?');">
         <button type="submit" class="boton-registro">Eliminar Cuenta</button>
     </form>

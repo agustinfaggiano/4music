@@ -7,6 +7,8 @@ const {validationResult} = require("express-validator");
 const db = require ("../../database/models");
 const { sequelize, Sequelize } = require('../../database/models');
 const { Session } = require('inspector');
+const Producto = require('../../database/models/Producto');
+const { Console } = require('console');
 //const { where } = require('sequelize/types');
 const op = Sequelize.Op;
 
@@ -220,7 +222,8 @@ const controladorProducto = {
                    
                 }
                 
-                res.redirect("/products"); 
+                res.redirect("/products/all-ok");
+            
             }
             else {
                     if (errors.errors.length > 0){
@@ -235,7 +238,7 @@ const controladorProducto = {
                                     old: req.body,
                                     producto: producto, 
                                     categoria: categoria
-                            })
+                                })
                         })
                     
                 }
@@ -401,25 +404,50 @@ const controladorProducto = {
             })    
                
         },
-        listarProductoApi: (req, res) => {
-            db.Producto.findAll({include: [{association:'categoria'},{association: 'fotos'},{association: 'producto_genero'}]})
-                .then(productos => {
+        productos: (req, res) => {
+            let productosPorCategoria = [];
+            let objetoProductoCategoria;
 
-                    return res.json( {
-                        total: productos.length,
-                        datos: productos })
-                })
+            db.Producto.findAll({ attributes: ['id_categoria', 
+                [sequelize.fn('COUNT', sequelize.col('titulo')), 'cantidadPorCategoria'] 
+                ],
+                group: 'id_categoria', include: [{association:'categoria'}]})
+            .then(productos => {
+                
+                for(let i=0; i<productos.length; i++){
+                     objetoProductoCategoria = {
+                        id_categoria:productos[i].id_categoria,
+                        nombre_categoria:productos[i].categoria.nombre,
+                        cantidad: productos[i].dataValues.cantidadPorCategoria
+                    };
+                    productosPorCategoria.push(objetoProductoCategoria);
+                }
+                
+                db.Producto.findAll({ order: [
+                    ['id', 'DESC']
+                    ],
+                    include: [{association:'categoria'},{association: 'fotos'},{association: 'producto_genero'}]})
+                    .then(productos => {
+
+                        return res.json( {
+                            count: productos.length,
+                            countByCategory: productosPorCategoria,
+                            products: productos })
+                    })
+            });  
+
+            
         },
-        countCategory: (req, res) => {
+        categorias: (req, res) => {
             db.Categoria.findAll()
                 .then(categorias => {
 
                     return res.json( {
-                        total: categorias.length
+                        count: categorias.length
                         })
                 })
         },
-        listarProductoIdApi: (req,res) =>{
+        producto: (req,res) =>{
             db.Producto.findByPk(req.params.id, {include: [{association:'categoria'},{association: 'fotos'},{association: 'producto_genero'}]})
                 .then(productos => {
 
